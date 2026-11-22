@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOLIS STUDIO | 極簡日常服飾選物</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    html { scroll-behavior: smooth; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-stone-50 text-stone-900 font-sans antialiased">
+
+  <!-- 頂部導覽列 -->
+  <header class="sticky top-0 z-40 bg-white/85 backdrop-blur-md border-b border-stone-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <button id="mobile-menu-btn" class="md:hidden p-2 -ml-2 text-stone-700 hover:text-black" aria-label="開啟選單">
+        <i data-lucide="menu" class="w-6 h-6"></i>
+      </button>
+
+      <a href="#" class="text-xl font-bold tracking-[0.2em] text-stone-900">SOLIS STUDIO</a>
+
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-stone-600">
+        <a href="#products" onclick="setCategory('全部')" class="hover:text-stone-900 transition">全部商品</a>
+        <a href="#products" onclick="setCategory('上衣')" class="hover:text-stone-900 transition">上衣</a>
+        <a href="#products" onclick="setCategory('外套')" class="hover:text-stone-900 transition">外套</a>
+        <a href="#products" onclick="setCategory('下身')" class="hover:text-stone-900 transition">下身</a>
+        <a href="#products" onclick="setCategory('配件')" class="hover:text-stone-900 transition">配件</a>
+      </nav>
+
+      <button onclick="toggleCart(true)" class="relative p-2 text-stone-700 hover:text-black transition" aria-label="開啟購物車">
+        <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+        <span id="cart-badge" class="hidden absolute top-0.5 right-0.5 bg-stone-900 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
+      </button>
+    </div>
+
+    <!-- 手機版下拉選單 -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-stone-200 px-4 py-3 space-y-2 text-sm font-medium text-stone-700">
+      <a href="#products" onclick="setCategory('全部'); toggleMobileMenu()" class="block py-1.5">全部商品</a>
+      <a href="#products" onclick="setCategory('上衣'); toggleMobileMenu()" class="block py-1.5">上衣</a>
+      <a href="#products" onclick="setCategory('外套'); toggleMobileMenu()" class="block py-1.5">外套</a>
+      <a href="#products" onclick="setCategory('下身'); toggleMobileMenu()" class="block py-1.5">下身</a>
+      <a href="#products" onclick="setCategory('配件'); toggleMobileMenu()" class="block py-1.5">配件</a>
+    </div>
+  </header>
+
+  <!-- 主視覺橫幅 -->
+  <section class="relative h-[60vh] min-h-[400px] flex items-center justify-center overflow-hidden bg-stone-900">
+    <img
+      src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1800&q=80"
+      alt="秋冬系列主視覺"
+      class="absolute inset-0 w-full h-full object-cover opacity-65"
+    />
+    <div class="relative z-10 text-center text-white px-4 max-w-2xl">
+      <p class="text-xs sm:text-sm tracking-[0.3em] uppercase mb-3 text-stone-200">2026 AUTUMN / WINTER</p>
+      <h1 class="text-3xl sm:text-5xl font-light tracking-wide leading-tight mb-5">回歸純粹剪裁，穿出日常從容</h1>
+      <a href="#categories" class="inline-block bg-white text-stone-900 px-8 py-3.5 text-sm font-medium tracking-widest hover:bg-stone-200 transition">
+        瀏覽分類
+      </a>
+    </div>
+  </section>
+
+  <!-- 視覺化分類入口區 (新增) -->
+  <section id="categories" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-6">
+    <div class="mb-8">
+      <h2 class="text-2xl font-medium tracking-wide text-stone-900">商品分類</h2>
+      <p class="text-sm text-stone-500 mt-1">依照穿搭需求快速瀏覽系列單品</p>
+    </div>
+    <div id="category-cards" class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <!-- 由 JS 動態生成 -->
+    </div>
+  </section>
+
+  <!-- 商品展示區 -->
+  <main id="products" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- 主分類 + 篩選控制列 -->
+    <div class="bg-white border border-stone-200 p-4 sm:p-5 mb-8 space-y-4">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <!-- 主分類按鈕（含數量） -->
+        <div id="category-filters" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 md:pb-0">
+          <!-- 由 JS 動態生成 -->
+        </div>
+
+        <!-- 標籤篩選與價格排序 -->
+        <div class="flex flex-wrap items-center gap-3 text-xs">
+          <div class="flex items-center gap-1.5">
+            <span class="text-stone-400">標籤：</span>
+            <select id="tag-filter" onchange="setTag(this.value)" class="border border-stone-300 bg-white px-2.5 py-1.5 text-stone-700 focus:outline-none focus:border-stone-900">
+              <option value="全部">全部標籤</option>
+              <option value="新品">新品</option>
+              <option value="熱銷">熱銷</option>
+              <option value="限量">限量</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <span class="text-stone-400">排序：</span>
+            <select id="sort-select" onchange="setSort(this.value)" class="border border-stone-300 bg-white px-2.5 py-1.5 text-stone-700 focus:outline-none focus:border-stone-900">
+              <option value="default">預設推薦</option>
+              <option value="price-asc">價格：低到高</option>
+              <option value="price-desc">價格：高到低</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 當前篩選狀態列 -->
+      <div class="flex items-center justify-between text-xs text-stone-500 pt-3 border-t border-stone-100">
+        <span id="result-count">顯示 9 件商品</span>
+        <button id="reset-filter-btn" onclick="resetFilters()" class="hidden text-stone-900 underline hover:text-stone-600">
+          清除篩選條件
+        </button>
+      </div>
+    </div>
+
+    <!-- 商品網格 -->
+    <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+      <!-- 由 JS 動態生成 -->
+    </div>
+  </main>
+
+  <!-- 頁尾 -->
+  <footer class="bg-stone-900 text-stone-400 py-10 text-xs mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="tracking-[0.2em] text-white font-semibold text-sm">SOLIS STUDIO</div>
+      <p>© 2026 SOLIS STUDIO. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- 購物車遮罩與抽屜 -->
+  <div id="cart-backdrop" onclick="toggleCart(false)" class="fixed inset-0 bg-black/40 z-50 hidden"></div>
+  <aside id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-white z-50 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+    <div class="px-6 py-5 border-b border-stone-200 flex items-center justify-between">
+      <h2 class="text-lg font-medium tracking-wide">購物車</h2>
+      <button onclick="toggleCart(false)" class="p-1 text-stone-500 hover:text-stone-900" aria-label="關閉購物車">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <div id="shipping-notice" class="px-6 py-3 bg-stone-100 text-xs text-stone-700 border-b border-stone-200"></div>
+    <div id="cart-items" class="flex-1 overflow-y-auto px-6 py-4 divide-y divide-stone-100"></div>
+    <div class="px-6 py-5 border-t border-stone-200 bg-stone-50 space-y-3">
+      <div class="flex justify-between text-sm text-stone-600"><span>商品小計</span><span id="cart-subtotal">NT$ 0</span></div>
+      <div class="flex justify-between text-sm text-stone-600"><span>運費</span><span id="cart-shipping">NT$ 0</span></div>
+      <div class="flex justify-between text-base font-semibold text-stone-900 pt-2 border-t border-stone-200"><span>總計</span><span id="cart-total">NT$ 0</span></div>
+      <button onclick="checkout()" class="w-full bg-stone-900 text-white py-3.5 text-sm font-medium tracking-widest hover:bg-stone-800 transition mt-2">前往結帳</button>
+    </div>
+  </aside>
+
+  <!-- 提示訊息 -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-stone-900 text-white text-xs px-5 py-3 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 z-50"></div>
+
+  <script>
+    // 分類視覺卡片設定
+    const categoryShowcase = [
+      {
+        name: "上衣",
+        en: "TOPS",
+        image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "外套",
+        en: "OUTERWEAR",
+        image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "下身",
+        en: "BOTTOMS",
+        image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "配件",
+        en: "ACCESSORIES",
+        image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=800&q=80"
+      }
+    ];
+
+    // 商品資料（擴充至 9 件）
+    const products = [
+      {
+        id: 1,
+        name: "極簡重磅落肩寬版 T-Shirt",
+        category: "上衣",
+        price: 890,
+        tag: "熱銷",
+        sizes: ["S", "M", "L"],
+        image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: 2,
+        name: "柔軟羊毛混紡針織開襟衫",
+        category: "上衣",
+        price: 1890,
+        tag: "新品",
+        sizes: ["S", "M", "L"],
+        image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: 3,
+        name: "純棉立領寬鬆長袖襯衫",
+        category: "上衣",
+        price: 1380,
+        tag: "",
+        sizes: ["S", "M", "L"],
+        image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: 4,
+        name: "亞麻混紡寬鬆西裝外套",
+        category: "外套",
+        price: 2480,
+        tag: "新品",
+        sizes: ["S", "M", "L"],
+        image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: 5,
+        name: "防風霧面長版風衣外套",
+        category: "外套",
+        price: 3280,
+        tag: "限量",
+        sizes: ["M", "L"],
+        image: "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: 6,
+        name: "高腰打褶垂墜西裝寬褲",
+        category: "下身",
+        price: 1580,
+        tag: "熱銷",
+        sizes: ["S", "M", "L"],
+        image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: 7,
+        name: "復古水洗直筒丹寧長褲",
+        category: "下身",
+        price: 1780,
+        tag: "",
+        sizes: ["S", "M", "L"],
+        image: "https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: 8,
+        name: "極簡霧面皮革托特肩背包",
+        category: "配件",
+        price: 2150,
+        tag: "限量",
+        sizes: ["F"],
+        image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        id: 9,
+        name: "喀什米爾混紡素色圍巾",
+        category: "配件",
+        price: 1180,
+        tag: "新品",
+        sizes: ["F"],
+        image: "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?auto=format&fit=crop&w=800&q=80"
+      }
+    ];
+
+    const categories = ["全部", "上衣", "外套", "下身", "配件"];
+    const FREE_SHIPPING_THRESHOLD = 2000;
+    const SHIPPING_FEE = 80;
+
+    let state = {
+      category: "全部",
+      tag: "全部",
+      sort: "default"
+    };
+
+    let selectedSizes = {};
+    let cart = [];
+    let toastTimer = null;
+
+    products.forEach(p => { selectedSizes[p.id] = p.sizes[0]; });
+
+    // 渲染視覺化分類卡片
+    function renderCategoryCards() {
+      const container = document.getElementById("category-cards");
+      container.innerHTML = categoryShowcase.map(cat => {
+        const count = products.filter(p => p.category === cat.name).length;
+        return `
+          <a href="#products" onclick="setCategory('${cat.name}')" class="group relative aspect-[4/5] overflow-hidden bg-stone-200 block">
+            <img src="${cat.image}" alt="${cat.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/15 to-transparent"></div>
+            <div class="absolute bottom-4 left-4 right-4 text-white">
+              <p class="text-[10px] tracking-[0.25em] text-stone-200">${cat.en}</p>
+              <div class="flex items-baseline justify-between mt-0.5">
+                <h3 class="text-lg font-medium tracking-wide">${cat.name}</h3>
+                <span class="text-xs text-stone-200">${count} 件</span>
+              </div>
+            </div>
+          </a>
+        `;
+      }).join("");
+    }
+
+    // 渲染主分類按鈕（含數量統計）
+    function renderCategoryFilters() {
+      const container = document.getElementById("category-filters");
+      container.innerHTML = categories.map(cat => {
+        const count = cat === "全部" ? products.length : products.filter(p => p.category === cat).length;
+        const active = cat === state.category;
+        return `
+          <button
+            onclick="setCategory('${cat}')"
+            class="px-4 py-1.5 text-xs font-medium rounded-full border transition whitespace-nowrap ${
+              active
+                ? "bg-stone-900 text-white border-stone-900"
+                : "bg-white text-stone-600 border-stone-300 hover:border-stone-900"
+            }"
+          >
+            ${cat} <span class="opacity-70 ml-0.5">(${count})</span>
+          </button>
+        `;
+      }).join("");
+    }
+
+    // 篩選與排序控制
+    function setCategory(category) {
+      state.category = category;
+      renderCategoryFilters();
+      renderProducts();
+    }
+
+    function setTag(tag) {
+      state.tag = tag;
+      renderProducts();
+    }
+
+    function setSort(sort) {
+      state.sort = sort;
+      renderProducts();
+    }
+
+    function resetFilters() {
+      state = { category: "全部", tag: "全部", sort: "default" };
+      document.getElementById("tag-filter").value = "全部";
+      document.getElementById("sort-select").value = "default";
+      renderCategoryFilters();
+      renderProducts();
+    }
+
+    function selectSize(productId, size) {
+      selectedSizes[productId] = size;
+      renderProducts();
+    }
+
+    // 渲染商品列表
+    function renderProducts() {
+      const grid = document.getElementById("product-grid");
+      const countEl = document.getElementById("result-count");
+      const resetBtn = document.getElementById("reset-filter-btn");
+
+      let filtered = products.filter(p => {
+        const matchCat = state.category === "全部" || p.category === state.category;
+        const matchTag = state.tag === "全部" || p.tag === state.tag;
+        return matchCat && matchTag;
+      });
+
+      if (state.sort === "price-asc") {
+        filtered.sort((a, b) => a.price - b.price);
+      } else if (state.sort === "price-desc") {
+        filtered.sort((a, b) => b.price - a.price);
+      }
+
+      const isFiltered = state.category !== "全部" || state.tag !== "全部" || state.sort !== "default";
+      resetBtn.classList.toggle("hidden", !isFiltered);
+      countEl.textContent = `顯示 ${filtered.length} 件商品`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-20 text-center text-stone-400">
+            <p class="text-sm mb-3">找不到符合條件的商品</p>
+            <button onclick="resetFilters()" class="text-xs text-stone-900 border border-stone-900 px-4 py-2 hover:bg-stone-900 hover:text-white transition">
+              查看全部商品
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(product => {
+        const currentSize = selectedSizes[product.id];
+        return `
+          <div class="group flex flex-col">
+            <div class="relative aspect-[3/4] overflow-hidden bg-stone-200 mb-4">
+              <img
+                src="${product.image}"
+                alt="${product.name}"
+                class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                onerror="this.src='https://placehold.co/600x800/e7e5e4/44403c?text=SOLIS'"
+              />
+              ${product.tag ? `
+                <span class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-stone-900 text-[11px] font-medium px-2.5 py-1 tracking-wider">
+                  ${product.tag}
+                </span>
+              ` : ""}
+            </div>
+
+            <div class="flex justify-between items-start gap-2 mb-2">
+              <div>
+                <p class="text-xs text-stone-400 mb-0.5">${product.category}</p>
+                <h3 class="text-sm font-medium text-stone-900">${product.name}</h3>
+              </div>
+              <span class="text-sm font-semibold text-stone-900 whitespace-nowrap">
+                NT$ ${product.price.toLocaleString()}
+              </span>
+            </div>
+
+            <div class="mt-auto pt-3 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-1.5">
+                ${product.sizes.map(size => `
+                  <button
+                    onclick="selectSize(${product.id}, '${size}')"
+                    class="w-8 h-8 text-xs border transition ${
+                      currentSize === size
+                        ? "border-stone-900 bg-stone-900 text-white"
+                        : "border-stone-300 text-stone-600 hover:border-stone-900"
+                    }"
+                  >
+                    ${size}
+                  </button>
+                `).join("")}
+              </div>
+
+              <button
+                onclick="addToCart(${product.id})"
+                class="flex-1 bg-white border border-stone-900 text-stone-900 hover:bg-stone-900 hover:text-white text-xs font-medium py-2 px-3 tracking-wider transition"
+              >
+                加入購物車
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // 購物車邏輯
+    function addToCart(productId) {
+      const product = products.find(p => p.id === productId);
+      const size = selectedSizes[productId];
+      const existing = cart.find(item => item.id === productId && item.size === size);
+      if (existing) existing.quantity += 1;
+      else cart.push({ id: product.id, name: product.name, price: product.price, image: product.image, size, quantity: 1 });
+      renderCart();
+      showToast(`已將「${product.name} (${size})」加入購物車`);
+    }
+
+    function updateQuantity(index, delta) {
+      cart[index].quantity += delta;
+      if (cart[index].quantity <= 0) cart.splice(index, 1);
+      renderCart();
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      renderCart();
+    }
+
+    function renderCart() {
+      const itemsContainer = document.getElementById("cart-items");
+      const badge = document.getElementById("cart-badge");
+      const subtotalEl = document.getElementById("cart-subtotal");
+      const shippingEl = document.getElementById("cart-shipping");
+      const totalEl = document.getElementById("cart-total");
+      const shippingNotice = document.getElementById("shipping-notice");
+
+      const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+      const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      const shipping = subtotal === 0 || subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+      const total = subtotal + shipping;
+
+      badge.textContent = totalQty;
+      badge.classList.toggle("hidden", totalQty === 0);
+
+      shippingNotice.textContent = subtotal >= FREE_SHIPPING_THRESHOLD
+        ? "已達免運門檻，本筆訂單享免運優惠！"
+        : `再消費 NT$ ${(FREE_SHIPPING_THRESHOLD - subtotal).toLocaleString()} 即可享免運優惠`;
+
+      if (cart.length === 0) {
+        itemsContainer.innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center text-stone-400 py-20">
+            <i data-lucide="shopping-bag" class="w-10 h-10 mb-3 stroke-1"></i>
+            <p class="text-sm">購物車目前是空的</p>
+          </div>
+        `;
+      } else {
+        itemsContainer.innerHTML = cart.map((item, idx) => `
+          <div class="py-4 flex gap-4">
+            <img src="${item.image}" alt="${item.name}" class="w-20 h-24 object-cover bg-stone-100 shrink-0" />
+            <div class="flex-1 flex flex-col justify-between">
+              <div class="flex justify-between items-start gap-2">
+                <div>
+                  <h4 class="text-sm font-medium text-stone-900">${item.name}</h4>
+                  <p class="text-xs text-stone-500 mt-0.5">尺寸：${item.size}</p>
+                </div>
+                <button onclick="removeItem(${idx})" class="text-stone-400 hover:text-stone-800" aria-label="移除商品">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+              <div class="flex justify-between items-center mt-2">
+                <div class="flex items-center border border-stone-300">
+                  <button onclick="updateQuantity(${idx}, -1)" class="px-2.5 py-1 text-xs hover:bg-stone-100">-</button>
+                  <span class="px-2.5 py-1 text-xs font-medium">${item.quantity}</span>
+                  <button onclick="updateQuantity(${idx}, 1)" class="px-2.5 py-1 text-xs hover:bg-stone-100">+</button>
+                </div>
+                <span class="text-sm font-medium">NT$ ${(item.price * item.quantity).toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      subtotalEl.textContent = `NT$ ${subtotal.toLocaleString()}`;
+      shippingEl.textContent = subtotal === 0 ? "NT$ 0" : (shipping === 0 ? "免運費" : `NT$ ${shipping}`);
+      totalEl.textContent = `NT$ ${total.toLocaleString()}`;
+      lucide.createIcons();
+    }
+
+    function toggleCart(open) {
+      document.getElementById("cart-backdrop").classList.toggle("hidden", !open);
+      document.getElementById("cart-drawer").classList.toggle("translate-x-full", !open);
+    }
+
+    function toggleMobileMenu() {
+      document.getElementById("mobile-menu").classList.toggle("hidden");
+    }
+    document.getElementById("mobile-menu-btn").addEventListener("click", toggleMobileMenu);
+
+    function checkout() {
+      if (cart.length === 0) return showToast("購物車內尚無商品");
+      alert("感謝您的訂購！這是一個前端示範網站。");
+      cart = [];
+      renderCart();
+      toggleCart(false);
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.remove("opacity-0");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.add("opacity-0"), 2200);
+    }
+
+    // 初始化
+    renderCategoryCards();
+    renderCategoryFilters();
+    renderProducts();
+    renderCart();
+    lucide.createIcons();
+  </script>
+</body>
+</html>
